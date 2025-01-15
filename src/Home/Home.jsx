@@ -3,13 +3,19 @@ import { motion } from "framer-motion";
 
 function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [userInput, setUserInput] = useState([]);
+  const [messages, setMessages] = useState("");
   const [isInputAtBottom, setIsInputAtBottom] = useState(false);
+  const [text, setText] = useState("")
 
   const handleSend = () => {
     if (userInput.trim() !== "") {
-      setMessages([...messages, { text: userInput, sender: "self" }]);
+      setText(userInput)
+      const formatted = text
+        .split(/(?<=[.!?])\s+/)
+        .map(sentence=>sentence.trim())
+        .filter(Boolean);
+      setText(formatted);
       setUserInput("");
       setIsInputAtBottom(true);
     }
@@ -89,14 +95,11 @@ function Home() {
 
             {/* Messages */}
             <div className="flex flex-col items-center space-y-4 mb-16">
-              {messages.map((message, index) => (
-                <motion.div
-                  key={index}
-                  className="mb-2 px-4 py-2 bg-blue-100 text-black rounded shadow"
-                >
-                  {message.text}
-                </motion.div>
-              ))}
+              {text.map((message, index) => (
+                <ul key = {index}>
+                  <li className = "mb-2 px-4 py-2 bg-blue-100 text-black rounded shadow">{message}</li>
+                </ul>
+                ))}
             </div>
 
             {/* Input and Send Button */}
