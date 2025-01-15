@@ -51,6 +51,17 @@ function Home() {
     }
   }
 
+  const closeSidebar = () => {
+    if (isSidebarOpen) {
+      toggleSidebar()
+    }
+  }
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
+    // 만약 상위에서 받는 toggleSidebar가 있다면:
+    // toggleSidebar();
+  };
+
   const toggleLanguageMenu = () => {
     setIsLanguageMenuOpen(!isLanguageMenuOpen);
   };
@@ -69,8 +80,8 @@ function Home() {
         .filter(Boolean);
       setTempText(formatted);
       setText("");
-      if (title != "Summerize") {
-        setTitle("Summerize");
+      if (title != "") {
+        setTitle("");
       } else {
         setTitle("Past your text in the text-box");
       }
@@ -103,6 +114,8 @@ function Home() {
     const range = selection.getRangeAt(0);
     const span = document.createElement("span");
     span.style.backgroundColor = "yellow";
+    span.style.borderRadius = "30px";
+    span.style.padding = "4px 6px";
     span.textContent = selectedString;
     range.deleteContents();
     range.insertNode(span);
@@ -126,7 +139,7 @@ function Home() {
     axios.post(API, post_data)
       .then(response => {
         // 서버 응답 예: gpt_result가 "뜻/설명/예문" 형태라고 가정
-        const [text1, text2, text3] = response.data.segmented_sentence.split(/\//);
+        const [text1, text2, text3] = response.data.gpt_result.split(/\//);
 
   
         // 상태 갱신 (비동기)
@@ -147,7 +160,7 @@ function Home() {
 
 
 
-  const Review = (index) => {
+  const seg_sent = (index) => {
     
     // 2) API 호출에는 'state' 대신 바로 추출한 변수를 사용
     const API = "http://43.201.113.85:8000/gpt/sentence-segment";
@@ -155,9 +168,11 @@ function Home() {
       complex_sentence: tempText[index],
       target_language: "korean",
     };
-    console.log(post_data)
+    
+    setImgsrc1("");
+    setImgsrc2("");
+    setImgsrc3("");
     openSidebar();
-  
     // 3) axios 호출
     axios.post(API, post_data)
       .then(response => {
@@ -167,6 +182,35 @@ function Home() {
         setMeaning(splitted[0] || "");
         setExplanation(splitted[1] || "");
         setExample(splitted[2] || "");
+
+      })
+      .catch(err => console.error(err));
+  };
+
+
+  const Review = (index) => {
+    
+    // 2) API 호출에는 'state' 대신 바로 추출한 변수를 사용
+    const API = "http://43.201.113.85:8000/db/read-words";
+    const post_data = {
+      user_id : 19,
+      target_language: "korean",
+    };
+    closeSidebar();
+  
+    // 3) axios 호출
+    axios.post(API, post_data)
+      .then(response => {
+        const sentences = response.data.paragraphs;
+
+        setTempText(sentences);
+        setMeaning("");
+        setExplanation("");
+        setExample("");
+        setImgsrc1("");
+        setImgsrc2("");
+        setImgsrc3("");
+
       })
       .catch(err => console.error(err));
   };
@@ -176,20 +220,35 @@ function Home() {
     <>
       <div className="App">
         {/* Navbar */}
-        <div className="navbar flex justify-between p-4 bg-gray-100 shadow">
-          <button
-            onClick={toggleSidebar}
-            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-          >
-            Sidebar
-          </button>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
-            Review
-          </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600">
-            Language
-          </button>
-        </div>
+        <div className="navbar flex items-center p-4 bg-white relative overflow-hidden gap-2">
+      {/* 왼쪽 버튼 (Sidebar) */}
+      <button
+        onClick={handleSidebarToggle}
+        className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+      >
+        Sidebar
+      </button>
+
+      {/* 가운데 + 오른쪽 버튼 묶음 */}
+      <div
+        className={`
+          flex gap-2 transition-transform duration-300 
+          ${isSidebarOpen ? "translate-x-full" : "translate-x-0"}
+        `}
+      >
+        <button
+          onClick={Review}
+          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-green-600"
+        >
+          Review
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-red-600"
+        >
+          Language
+        </button>
+      </div>
+    </div>
 
         {/* Main Layout */}
         <div className="flex min-h-screen">
@@ -209,9 +268,9 @@ function Home() {
               <p className="mb-4">{meaning}</p>
               <p className="mb-4">{explanation}</p>
               <p className="mb-4">{example}</p>
-              <img src={imgsrc1} alt="None" className="w-64 h-auto rounded"></img>
-              <img src={imgsrc2} alt="None" className="w-64 h-auto rounded"></img>
-              <img src={imgsrc3} alt="None" className="w-64 h-auto rounded"></img>
+              <img src={imgsrc1} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
+              <img src={imgsrc2} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
+              <img src={imgsrc3} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
             </div>
           </div>
 
@@ -221,11 +280,22 @@ function Home() {
               isSidebarOpen ? "ml-64" : "ml-0"
             } transition-all duration-300 ease-in-out`}
           >
+          <div className="pb-16">
             {/* Messages */}
-            <div className="whitespace-pre-wrap">
+            <div
+            className="
+              whitespace-pre-wrap
+              flex flex-col items-center justify-center
+              space-y-4
+            ">
               {tempText.length !== 0 && (tempText.map((sentence, index) => (
                 <ul key={index}>
-                  <div className="flex items-start">
+                  <div
+                    className="
+                      flex items-start
+                      w-[1100px]          /* 고정 너비 설정 */
+                    "
+                  >
                     {/* 가위 이미지 버튼 */}
                     <button
                       className="
@@ -237,7 +307,7 @@ function Home() {
                         p-0               /* 기본 패딩 제거 */
                       "
                       onClick={() => {
-                        Review(index)
+                        seg_sent(index)
                       }}
                       aria-label="가위 버튼"
                       style={{ border: "none", outline: "none" }}  // 혹시 남는 브라우저 기본 테두리 제거용
@@ -254,8 +324,9 @@ function Home() {
                       className="
                         mb-2
                         px-4 py-2
+                        flex-1 break-words
                         bg-blue-100 text-black
-                        rounded shadow
+                        rounded-[30px] shadow
                         list-none
                       "
                       onMouseUp={() => handleMouseUp(index)}
@@ -277,44 +348,71 @@ function Home() {
             </motion.h1>
 
             {/* Input and Send Button */}
-            <div
-              className={`${
-                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative"
-              } p-4`}
-            >
-              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
-                <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  className="flex-1 px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-800"
-                  placeholder="Enter Text..."
-                />
+  <div
+  className={`${
+    isInputAtBottom
+      ? "absolute bottom-0 left-0 w-full"
+      : "relative"
+  } p-4`}
+  >
+  {/* ▼ 수정된 부분: 처음부터 넉넉한 높이/패딩을 줘서 “입력 후와 같은 크기” 유지 */}
+  <div
+    className="
+      flex items-center
+      gap-4
+      bg-white
+      p-6               /* 기존 p-4에서 p-6로 늘려, 처음부터 높게 보이게 함 */
+      rounded-full
+      shadow-md
+      max-w-2xl
+      mx-auto
+      mt-4
+      min-h-[4rem]      /* 최소 높이를 지정, 입력 전에도 충분히 크게 보이도록 */
+    "
+  >
+    <input
+      type="text"
+      value={userInput}
+      onChange={(e) => setUserInput(e.target.value)}
+      className="
+        flex-1
+        px-4
+        py-3               /* 기존 py-2에서 조금 늘려줌 */
+        border-none
+        rounded-full
+        focus:outline-none
+        focus:ring-2
+        focus:ring-blue-500
+        bg-gray-100
+        text-gray-800
+      "
+      placeholder="Enter Text..."
+    />
                 <button
                   onClick={clicked}
-                  className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition duration-300"
+                  className="
+                    px-6
+                    py-3           /* 버튼도 높이를 조금 늘려 전체적으로 균형 맞춤 */
+                    bg-blue-500
+                    text-white
+                    font-medium
+                    rounded-full
+                    hover:bg-blue-600
+                    transition
+                    duration-300
+                  "
                 >
                   Send
                 </button>
-              </div>
+                </div>
+
               <div className="search w-full max-w-md">
-                {/* <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-full focus:outline-none"
-                  placeholder="Enter Text"
-                />
-                <button
-                  className="w-full mt-2 px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
-                  onClick={handleSend}
-                >
-                  Send
-                </button> */}
+                {/* 필요 없는 주석 처리된 부분은 그대로 두거나 제거하셔도 됩니다 */}
               </div>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </>
   );

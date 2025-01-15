@@ -29,7 +29,7 @@ const LoginPage = () => {
 
     try {
       console.log("create successfully!");
-      navigate("/chatbox");
+      navigate("/Home");
     } catch (error) {
       console.error("Error:", error);
     }
