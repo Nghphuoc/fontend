@@ -7,6 +7,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />}></Route>
+          <Route path="/Home" element={<Home/>}></Route>  
+          <Route path="/chatbox" element={<ChatBox />}></Route>
         </Routes>
       </BrowserRouter>
     </>
