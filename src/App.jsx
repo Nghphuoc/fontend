@@ -13,8 +13,6 @@ function App() {
       <Routes>
         <Route path="/Home" element={<Home/>}>
         </Route>
-
-        
           <Route path="/" element={<LoginPage />}></Route>
           <Route path="/chatbox" element={<ChatBox />}></Route>
         </Routes>
