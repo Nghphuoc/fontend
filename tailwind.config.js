@@ -4,7 +4,11 @@ export default {
     "./src/**/*.{html,js,jsx,ts,tsx}", // Include all source files
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        customRed: "#da3c3b",
+      },
+    },
   },
   plugins: [],
 };

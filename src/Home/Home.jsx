@@ -103,6 +103,8 @@ function Home() {
     const range = selection.getRangeAt(0);
     const span = document.createElement("span");
     span.style.backgroundColor = "yellow";
+    span.style.borderRadius = "30px";
+    span.style.padding = "4px 6px";
     span.textContent = selectedString;
     range.deleteContents();
     range.insertNode(span);
@@ -183,10 +185,10 @@ function Home() {
           >
             Sidebar
           </button>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
             Review
           </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
             Language
           </button>
         </div>
@@ -221,11 +223,22 @@ function Home() {
               isSidebarOpen ? "ml-64" : "ml-0"
             } transition-all duration-300 ease-in-out`}
           >
+          <div className="pb-16">
             {/* Messages */}
-            <div className="whitespace-pre-wrap">
+            <div
+            className="
+              whitespace-pre-wrap
+              flex flex-col items-center justify-center
+              space-y-4
+            ">
               {tempText.length !== 0 && (tempText.map((sentence, index) => (
                 <ul key={index}>
-                  <div className="flex items-start">
+                  <div
+                    className="
+                      flex items-start
+                      w-[1100px]          /* 고정 너비 설정 */
+                    "
+                  >
                     {/* 가위 이미지 버튼 */}
                     <button
                       className="
@@ -254,8 +267,9 @@ function Home() {
                       className="
                         mb-2
                         px-4 py-2
+                        flex-1 break-words
                         bg-blue-100 text-black
-                        rounded shadow
+                        rounded-[30px] shadow
                         list-none
                       "
                       onMouseUp={() => handleMouseUp(index)}
@@ -279,10 +293,12 @@ function Home() {
             {/* Input and Send Button */}
             <div
               className={`${
-                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative"
-              } p-4`}
+                isInputAtBottom ? "fixed bottom-0 left-0 w-full" : "relative"
+              } p-4 transition-all duration-300 ${
+                isSidebarOpen ? "ml-32" : "ml-0"
+              }`}
             >
-              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
+              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4 mb-12">
                 <input
                   type="text"
                   value={userInput}
@@ -297,6 +313,10 @@ function Home() {
                   Send
                 </button>
               </div>
+
+
+            </div>
+
               <div className="search w-full max-w-md">
                 {/* <input
                   type="text"
