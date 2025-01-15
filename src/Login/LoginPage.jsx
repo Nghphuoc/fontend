@@ -50,7 +50,7 @@ const LoginPage = () => {
         animate="visible"
         variants={fadeInFromTop}
       >
-        Welcome to AI language learning!
+        Welcome to our Immersity!
       </motion.h1>
 
       <div className="bg-gray-100 p-8 rounded-lg shadow-lg w-auto">

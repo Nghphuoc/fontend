@@ -18,6 +18,7 @@ function Home() {
   const [imgsrc2, setImgsrc2] = useState("")
   const [imgsrc3, setImgsrc3] = useState("")
   const [paragraphs, setParagraphs] = useState([])
+  const [showButtons, setShowButtons] = useState(true);
 
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
@@ -25,7 +26,7 @@ function Home() {
   };
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isSearchBarMoved, setIsSearchBarMoved] = useState(false); // 서치바 이동 상태
-  const [title, setTitle] = useState("Past your text in the text-box");
+  const [title, setTitle] = useState("Past your text in the text-box\nor click a button for suggestions.");
   // variable save data user choose and line text user choose
   const [selectedText, setSelectedText] = useState(""); // this will save all text
 
@@ -66,6 +67,10 @@ function Home() {
     setIsLanguageMenuOpen(!isLanguageMenuOpen);
   };
 
+  const handleHideButtons = () => {
+    setShowButtons(false);
+  };
+
   const clicked = () => {
     // check input if just space or do not enter will not send 
     if (!userInput.trim()) {
@@ -92,7 +97,6 @@ function Home() {
     
   };
 
-  const [showButtons, setShowButtons] = useState(true);
 
   const handleRemoveAll = () => {
     // 버튼 보임 여부를 false 로 변경
@@ -339,7 +343,7 @@ function Home() {
             </div>
 
             <motion.h1
-              className="text-center text-4xl mb-8"
+              className="text-center text-4xl mb-8 whitespace-pre-wrap"
               initial="hidden"
               animate="visible"
               variants={fadeInFromTop}
@@ -348,14 +352,7 @@ function Home() {
             </motion.h1>
 
             {/* Input and Send Button */}
-            <div
-              className={`${
-                isInputAtBottom ? "fixed bottom-0 left-0 w-full" : "relative"
-              } p-4 transition-all duration-300 ${
-                isSidebarOpen ? "ml-32" : "ml-0"
-              }`}
-            >
-              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4 mb-12">
+              <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-md max-w-xl mx-auto mt-4 mb-6">
                 <input
                   type="text"
                   value={userInput}
@@ -379,10 +376,81 @@ function Home() {
                 >
                   Send
                 </button>
-              </div>
 
 
             </div>
+            <div className="w-full flex justify-center mt-2">
+  <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      KBS
+    </button>)}
+    
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      SBS
+    </button>)}
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      YTN
+    </button>)}
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      MBC
+    </button>)}
+  </div>
+</div>
+
 
               <div className="search w-full max-w-md">
                 {/* 필요 없는 주석 처리된 부분은 그대로 두거나 제거하셔도 됩니다 */}
@@ -390,6 +458,8 @@ function Home() {
             </div>
           </div>
         </div>
+      </div>
+      </div>
       </div>
       </div>
     </>
