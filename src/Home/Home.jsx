@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import axios from 'axios';
+
 
 function Home() {
   const [text, setText] = useState(""); // 텍스트 상태 저장
@@ -8,6 +10,7 @@ function Home() {
   const [userInput, setUserInput] = useState([]);
   const [messages, setMessages] = useState("");
   const [isInputAtBottom, setIsInputAtBottom] = useState(false);
+  const [result, setResult] = useState("");
 
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
@@ -89,8 +92,17 @@ function Home() {
       setSelectedText(selectedString);
       setIndexText(tempText[index]);
 
+      const API = "http://43.201.113.85:8000/gpt/search"
+      const post_data = {"user_id" : "qwer@egg.com", "searching_word": selectedText, "context_sentence": indexText, "target_language":"english"}
+
+      
       console.log(selectedText);
-      console.log(indexText);
+      console.log(indexText);  
+      
+      axios.post(API,post_data).then(response => {setResult(response)});
+
+      console.log(result);
+      toggleSidebar();
     }
   };
 
