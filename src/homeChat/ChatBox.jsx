@@ -45,7 +45,7 @@ const ChatBox =()=>{
 
   const handleMouseUp = () => {
     const selection = window.getSelection();
-    const selectedString = selection.toString().trim();
+    const selectedString = selection.toString();
 
 
 // i use thiss for web

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { LoginApi } from "./api";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,7 +15,13 @@ const LoginPage = () => {
   // Hàm gọi API
   const loginButton = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const data = LoginApi(email).then((responnse)=>{
 
+      console.log(data.user_id);
+    }
+    ).catch((error)=>{
+      console.log(error);
+    })
     if (!emailRegex.test(email)) {
       alert("Please enter a valid email address.");
       return;
