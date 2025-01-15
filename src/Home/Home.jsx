@@ -348,46 +348,21 @@ function Home() {
             </motion.h1>
 
             {/* Input and Send Button */}
-  <div
-  className={`${
-    isInputAtBottom
-      ? "absolute bottom-0 left-0 w-full"
-      : "relative"
-  } p-4`}
-  >
-  {/* ▼ 수정된 부분: 처음부터 넉넉한 높이/패딩을 줘서 “입력 후와 같은 크기” 유지 */}
-  <div
-    className="
-      flex items-center
-      gap-4
-      bg-white
-      p-6               /* 기존 p-4에서 p-6로 늘려, 처음부터 높게 보이게 함 */
-      rounded-full
-      shadow-md
-      max-w-2xl
-      mx-auto
-      mt-4
-      min-h-[4rem]      /* 최소 높이를 지정, 입력 전에도 충분히 크게 보이도록 */
-    "
-  >
-    <input
-      type="text"
-      value={userInput}
-      onChange={(e) => setUserInput(e.target.value)}
-      className="
-        flex-1
-        px-4
-        py-3               /* 기존 py-2에서 조금 늘려줌 */
-        border-none
-        rounded-full
-        focus:outline-none
-        focus:ring-2
-        focus:ring-blue-500
-        bg-gray-100
-        text-gray-800
-      "
-      placeholder="Enter Text..."
-    />
+            <div
+              className={`${
+                isInputAtBottom ? "fixed bottom-0 left-0 w-full" : "relative"
+              } p-4 transition-all duration-300 ${
+                isSidebarOpen ? "ml-32" : "ml-0"
+              }`}
+            >
+              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4 mb-12">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  className="flex-1 px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-800"
+                  placeholder="Enter Text..."
+                />
                 <button
                   onClick={clicked}
                   className="
@@ -404,7 +379,10 @@ function Home() {
                 >
                   Send
                 </button>
-                </div>
+              </div>
+
+
+            </div>
 
               <div className="search w-full max-w-md">
                 {/* 필요 없는 주석 처리된 부분은 그대로 두거나 제거하셔도 됩니다 */}

@@ -66,7 +66,9 @@ const LoginPage = () => {
         />
         <button
           className="w-full p-3 rounded-full bg-gray-300 text-black font-bold hover:bg-gray-400"
+          value={email}
           onClick={loginButton}
+          onKeyDown={handleKeyDown}
         >
           Leave your first step!
         </button>
