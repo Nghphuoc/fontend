@@ -31,29 +31,34 @@ function Home() {
   };
 
   const clicked = () => {
-    // check input if just space or do not enter will not send 
+    // check input if just space or do not enter will not send
     if (!userInput.trim()) {
       // Kiểm tra nếu input trống hoặc chỉ chứa khoảng trắng
       alert("Input cannot be empty!");
       return; // Ngăn không cho tiến trình tiếp tục
     }
-    
-      const formatted = userInput
-        .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
-        .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
-        .filter(Boolean);
-      setTempText(formatted);
-      setText("");
-      if (title != "Summerize") {
-        setTitle("Summerize");
-      } else {
-        setTitle("Past your text in the text-box");
-      }
-      handleRemoveAll();
-      setMessages([...messages, { text: userInput, sender: "self" }]);
-      setUserInput("");
-      setIsInputAtBottom(true);
-    
+
+    const formatted = userInput
+      .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
+      .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
+      .filter(Boolean);
+    setTempText(formatted);
+    setText("");
+    if (title != "Summerize") {
+      setTitle("Summerize");
+    } else {
+      setTitle("Past your text in the text-box");
+    }
+    handleRemoveAll();
+    setMessages([...messages, { text: userInput, sender: "self" }]);
+    setUserInput("");
+    setIsInputAtBottom(true);
+
+    // Đặt lại chiều cao của textarea
+    const textarea = document.querySelector("textarea");
+    if (textarea) {
+      textarea.style.height = "auto"; // Reset height
+    }
   };
 
   const [showButtons, setShowButtons] = useState(true);
@@ -118,7 +123,7 @@ function Home() {
           {/* Sidebar */}
           <div
             className={`fixed top-0 left-0 h-full bg-gray-200 shadow-lg ${
-              isSidebarOpen ? "w-64" : "w-0"
+              isSidebarOpen ? "w-96" : "w-0"
             } overflow-hidden transition-all duration-300 ease-in-out`}
           >
             <div className="p-4">
@@ -145,7 +150,7 @@ function Home() {
               {tempText.map((sentence, index) => (
                 <ul key={index}>
                   <li
-                    className="mb-2 px-4 py-2 bg-blue-100 text-black rounded shadow"
+                    className="mb-2 px-4 py-2 bg-gray-200 text-black rounded shadow w-80 h-auto text-center"
                     onMouseUp={() => handleMouseUp(index)}
                   >
                     {sentence}
@@ -166,17 +171,21 @@ function Home() {
             {/* Input and Send Button */}
             <div
               className={`${
-                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative"
+                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative "
               } p-4`}
             >
-              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
-                <input
-                  type="text"
+              <div className="flex items-center  gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
+                <textarea
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
-                  className="flex-1 px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-800"
+                  onInput={(e) => {
+                    e.target.style.height = "auto"; // Reset height trước khi tính toán lại
+                    e.target.style.height = `${e.target.scrollHeight}px`; // Điều chỉnh chiều cao dựa trên nội dung
+                  }}
+                  className="flex-1 px-4 py-2 border-none rounded-md bg-gray-100 text-gray-800 focus:outline-none"
                   placeholder="Enter Text..."
-                />
+                  rows={1}
+                ></textarea>
                 <button
                   onClick={clicked}
                   className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition duration-300"
