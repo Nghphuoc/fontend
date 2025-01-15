@@ -6,6 +6,8 @@ import { LoginApi } from "./api";
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  // variable support you save user_id when you login 
+  const [saveUserId, setSaveUserId] = useState("");
 
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
@@ -15,13 +17,18 @@ const LoginPage = () => {
   // Hàm gọi API
   const loginButton = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const data = LoginApi(email).then((responnse)=>{
 
-      console.log(data.user_id);
-    }
-    ).catch((error)=>{
-      console.log(error);
-    })
+    LoginApi(email)
+      .then((data) => {
+        console.log("User ID:", data.user_id);
+        setSaveUserId(data.user_id);
+        console.log(saveUserId);
+        //localStorage.setItem(saveUserId,"user_id");
+      })
+      .catch((error) => {
+        console.error("Error:", error.message);
+      });
+
     if (!emailRegex.test(email)) {
       alert("Please enter a valid email address.");
       return;
