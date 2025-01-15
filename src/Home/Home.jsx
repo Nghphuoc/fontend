@@ -9,7 +9,7 @@ function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userInput, setUserInput] = useState([]);
   const [messages, setMessages] = useState("");
-  const [isInputAtBottom, setIsInputAtBottom] = useState(false);
+  const [isInputAtBottom, setIsInputAtBottom] = useState(true);
   const [result, setResult] = useState("");
   const [meaning, setMeaning] = useState("Any word is not searched yet.")
   const [explanation, setExplanation] = useState("")
