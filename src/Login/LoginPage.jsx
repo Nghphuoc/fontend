@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { LoginApi } from "./api";
 
 const LoginPage = () => {
   const navigator = useNavigate();
@@ -12,8 +13,17 @@ const LoginPage = () => {
   };
 // function call api to backend 
   const loginButton = () => {
-    console.log("hello");
-    navigator('/chatbox');
+    try{
+       const response =  LoginApi(email);
+       
+        alert(response.message);
+
+        console.log("create successfully!");
+      //navigator('/chatbox');
+    }catch{
+      console.assert("error");
+    }
+    
   };
 
   // function handle enter to user
@@ -25,7 +35,6 @@ const handleKeyDown = (event) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-
       <motion.h1
         className="text-center text-4xl mb-8"
         initial="hidden"
@@ -39,6 +48,7 @@ const handleKeyDown = (event) => {
         <input
           type="email"
           placeholder="Enter your e-mail"
+          onChange={(e) => setemail(e.target.value)}
           className="w-full p-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
         />
         <button

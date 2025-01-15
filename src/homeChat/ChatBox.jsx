@@ -47,6 +47,8 @@ const ChatBox =()=>{
     const selection = window.getSelection();
     const selectedString = selection.toString().trim();
 
+
+// i use thiss for web
     if (selectedString) {
       // Lấy node cha chứa đoạn văn bản đã chọn
       const range = selection.getRangeAt(0);
@@ -63,6 +65,8 @@ const ChatBox =()=>{
       setSelectedText(selectedString);
     }
   };
+
+  
 
   return (
     <div className="p-4">

@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+
 function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInput, setUserinput] = useState("");
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isInputAtBottom, setIsInputAtBottom] = useState(false);
 
   const handleSend = () => {
-    if (input.trim() !== "") {
-      setMessages([...messages, { text: input, sender: "self" }]);
-      setInput("");
+    if (userInput.trim() !== "") {
+      setMessages([...messages, { text: userInput, sender: "self" }]);
+      setUserInput("");
+      setIsInputAtBottom(true);
     }
   };
-
-  const handleClickSearch = () => {
-
-  }
 
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
@@ -24,91 +24,114 @@ function Home() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
   return (
-    <div className="App">
-      {/* Thanh điều hướng */}
-      <div className="navbar flex justify-between p-4 bg-gray-100 shadow">
-        <button
-          onClick={toggleSidebar}
-          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-        >
-          Sidebar
-        </button>
-        <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
-          Review
-        </button>
-        <button className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600">
-          Language
-        </button>
-      </div>
-
-      {/* Bố cục chính */}
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <div
-          className={`fixed top-0 left-0 h-full bg-gray-200 shadow-lg ${
-            isSidebarOpen ? "w-64" : "w-0"
-          } overflow-hidden transition-all duration-300 ease-in-out`}
-        >
-          <div className="p-4">
-            <button
-              onClick={toggleSidebar}
-              className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-            >
-              Close Sidebar
-            </button>
-            <p className="mb-4">Menu Item 1</p>
-            <p className="mb-4">Menu Item 2</p>
-            <p className="mb-4">Menu Item 3</p>
-          </div>
-        </div>
-
-        {/* Nội dung chính */}
-        <div
-          className={`flex-1 flex flex-col items-center justify-center ${
-            isSidebarOpen ? "ml-64" : "ml-0"
-          } transition-all duration-300 ease-in-out`}
-        >
-          <motion.h1
-            className="text-center text-4xl mb-8"
-            initial="hidden"
-            animate="visible"
-            variants={fadeInFromTop}
+    <>
+      <div className="App">
+        {/* Navbar */}
+        <div className="navbar flex justify-between p-4 bg-gray-100 shadow">
+          <button
+            onClick={toggleSidebar}
+            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
           >
-            <h3>AI Language Learning Services for the Upper Level</h3>
-          </motion.h1>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="search w-full max-w-md">
-              <input
-                className="w-full px-4 py-2 border rounded-full focus:outline-none bg-gray-50"
-                placeholder="Enter Text"
-              />
-              <button className="w-full mt-2 px-4 py-2 bg-gray-300 text-white rounded-full hover:bg-gray-400">
-                Search
+            Sidebar
+          </button>
+          <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
+            Review
+          </button>
+          <button className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600">
+            Language
+          </button>
+        </div>
+
+        {/* Main Layout */}
+        <div className="flex min-h-screen">
+          {/* Sidebar */}
+          <div
+            className={`fixed top-0 left-0 h-full bg-gray-200 shadow-lg ${
+              isSidebarOpen ? "w-64" : "w-0"
+            } overflow-hidden transition-all duration-300 ease-in-out`}
+          >
+            <div className="p-4">
+              <button
+                onClick={toggleSidebar}
+                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+              >
+                Close Sidebar
               </button>
+              <p className="mb-4">Menu Item 1</p>
+              <p className="mb-4">Menu Item 2</p>
+              <p className="mb-4">Menu Item 3</p>
             </div>
-            <div className="news grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                BBC
-              </button>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                Le Monde
-              </button>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                Le Figaro
-              </button>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                New York Times
-              </button>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                Tuổi Trẻ
-              </button>
+          </div>
+
+          {/* Main Content */}
+          <div
+            className={`flex-1 flex flex-col items-center justify-center ${
+              isSidebarOpen ? "ml-64" : "ml-0"
+            } transition-all duration-300 ease-in-out`}
+          >
+            <motion.h1
+              className="text-center text-4xl mb-8"
+              initial="hidden"
+              animate="visible"
+              variants={fadeInFromTop}
+            >
+              AI Language Learning Services for the Upper Level
+            </motion.h1>
+
+            {/* Messages */}
+            <div className="flex flex-col items-center space-y-4 mb-16">
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  className="mb-2 px-4 py-2 bg-blue-100 text-black rounded shadow"
+                >
+                  {message.text}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Input and Send Button */}
+            <div
+              className={`${
+                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative"
+              } p-4`}
+            >
+              <div className="flex items-center gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  className="flex-1 px-4 py-2 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 text-gray-800"
+                  placeholder="Enter Text..."
+                />
+                <button
+                  onClick={handleSend}
+                  className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition duration-300"
+                >
+                  Send
+                </button>
+              </div>
+              <div className="search w-full max-w-md">
+                {/* <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-full focus:outline-none"
+                  placeholder="Enter Text"
+                />
+                <button
+                  className="w-full mt-2 px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
+                  onClick={handleSend}
+                >
+                  Send
+                </button> */}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
