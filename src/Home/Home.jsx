@@ -20,6 +20,8 @@ function Home() {
   const [paragraphs, setParagraphs] = useState([])
   const [showButtons, setShowButtons] = useState(true);
 
+  const kbs_news = "종합일간지를 보면 ‘사설(社說)’이 있습니다. 이것은 ‘글쓴이의 주장이나 의견을 써내는 논설’을 말하는데, 대개 사설을 읽어 보면 그 신문사의 입장과 시각을 어느 정도 파악할 수 있습니다. 같은 사안을 두고도 신문사마다 보는 시각 차이가 너무나 다른 경우가 많기 때문에 때때로 같은 것에 대해서도 사람마다 생각하는 것이 이렇게 다르구나 하고 놀랄 때가 있습니다. 이 ‘사설’이란 한자어는 ‘단체 사(社)’자에 ‘말씀 설(說)’자로 이루어진 것인데요, 이것과는 다른 ‘사설’이 또 있습니다. 예를 들어 ‘할 일도 많은데 웬 사설을 그렇게 늘어놓나?’와 같이 말할 수 있는데, 이것은 ‘말 사(辭)’자에 ‘말씀 설(說)’자로 이루어진 표현입니다. 원래 이 ‘사설’은 노래나 연극 따위의 사이사이에 엮어서 늘어놓는 이야기를 뜻하는 말이었습니다. 판소리에서, 창을 하는 중간 중간에 가락을 붙이지 않고 이야기하듯 엮어 나가는 부분이 있는데요, 이것을 ‘사설’이라고도 하고 ‘아니리’라고도 합니다. 그런데 오늘날에 와서는 길게 늘어놓는 잔소리나 푸념 섞인 말을 가리키게 된 것이지요. 참고로 앞서 말씀드린 ‘아니리’와 다르게 ‘판소리에서, 소리의 극적인 전개를 돕기 위해 몸짓이나 손짓으로 하는 동작’은 ‘발림’이라고 한다는 것도 참고로 함께 알아 두시면 좋겠습니다."
+
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
@@ -40,6 +42,19 @@ function Home() {
     console.log("selectedText", selectedText);
   }, [meaning, indexText, explanation, example, selectedText]);
   
+  const setKBS = () => {
+    const formatted = kbs_news
+    .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
+    .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
+    .filter(Boolean);
+    setTempText(formatted);
+    handleRemoveAll();
+    if (title != "") {
+      setTitle("");
+    } else {
+      setTitle("Past your text in the text-box");
+    }
+  }
 
   //
   const toggleSidebar = () => {
@@ -248,6 +263,7 @@ function Home() {
         </button>
         <button
           className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-red-600"
+          
         >
           Language
         </button>
@@ -393,6 +409,7 @@ function Home() {
         hover:bg-gray-100
         transition-colors duration-200
       "
+      onClick={setKBS}
     >
       KBS
     </button>)}
