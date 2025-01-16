@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import axios from 'axios';
+
 
 function Home() {
   const [text, setText] = useState(""); // 텍스트 상태 저장
   const [tempText, setTempText] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [isInputAtBottom, setIsInputAtBottom] = useState(false);
+  const [userInput, setUserInput] = useState([]);
+  const [messages, setMessages] = useState("");
+  const [isInputAtBottom, setIsInputAtBottom] = useState(true);
+  const [result, setResult] = useState("");
+  const [meaning, setMeaning] = useState("Any word is not searched yet.")
+  const [explanation, setExplanation] = useState("")
+  const [example, setExample] = useState("")
+  const [imgsrc1, setImgsrc1] = useState("")
+  const [imgsrc2, setImgsrc2] = useState("")
+  const [imgsrc3, setImgsrc3] = useState("")
+  const [paragraphs, setParagraphs] = useState([])
+  const [showButtons, setShowButtons] = useState(true);
+
+  const kbs_news = "종합일간지를 보면 ‘사설(社說)’이 있습니다. 이것은 ‘글쓴이의 주장이나 의견을 써내는 논설’을 말하는데, 대개 사설을 읽어 보면 그 신문사의 입장과 시각을 어느 정도 파악할 수 있습니다. 같은 사안을 두고도 신문사마다 보는 시각 차이가 너무나 다른 경우가 많기 때문에 때때로 같은 것에 대해서도 사람마다 생각하는 것이 이렇게 다르구나 하고 놀랄 때가 있습니다. 이 ‘사설’이란 한자어는 ‘단체 사(社)’자에 ‘말씀 설(說)’자로 이루어진 것인데요, 이것과는 다른 ‘사설’이 또 있습니다. 예를 들어 ‘할 일도 많은데 웬 사설을 그렇게 늘어놓나?’와 같이 말할 수 있는데, 이것은 ‘말 사(辭)’자에 ‘말씀 설(說)’자로 이루어진 표현입니다. 원래 이 ‘사설’은 노래나 연극 따위의 사이사이에 엮어서 늘어놓는 이야기를 뜻하는 말이었습니다. 판소리에서, 창을 하는 중간 중간에 가락을 붙이지 않고 이야기하듯 엮어 나가는 부분이 있는데요, 이것을 ‘사설’이라고도 하고 ‘아니리’라고도 합니다. 그런데 오늘날에 와서는 길게 늘어놓는 잔소리나 푸념 섞인 말을 가리키게 된 것이지요. 참고로 앞서 말씀드린 ‘아니리’와 다르게 ‘판소리에서, 소리의 극적인 전개를 돕기 위해 몸짓이나 손짓으로 하는 동작’은 ‘발림’이라고 한다는 것도 참고로 함께 알아 두시면 좋겠습니다."
 
   const fadeInFromTop = {
     hidden: { opacity: 0, y: -50 },
@@ -15,19 +28,62 @@ function Home() {
   };
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isSearchBarMoved, setIsSearchBarMoved] = useState(false); // 서치바 이동 상태
-  const [title, setTitle] = useState("Past your text in the text-box");
+  const [title, setTitle] = useState("Past your text in the text-box\nor click a button for suggestions.");
   // variable save data user choose and line text user choose
   const [selectedText, setSelectedText] = useState(""); // this will save all text
 
   const [indexText, setIndexText] = useState(""); // this will save index text user choose
+
+  useEffect(() => {
+    console.log("meaning:", meaning);
+    console.log("indexText:", indexText);
+    console.log("explanation:", explanation);
+    console.log("example:", example);
+    console.log("selectedText", selectedText);
+  }, [meaning, indexText, explanation, example, selectedText]);
+  
+  const setKBS = () => {
+    const formatted = kbs_news
+    .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
+    .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
+    .filter(Boolean);
+    setTempText(formatted);
+    handleRemoveAll();
+    if (title != "") {
+      setTitle("");
+    } else {
+      setTitle("Past your text in the text-box");
+    }
+  }
 
   //
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const openSidebar = () => {
+    if (!isSidebarOpen) {
+      toggleSidebar()
+    }
+  }
+
+  const closeSidebar = () => {
+    if (isSidebarOpen) {
+      toggleSidebar()
+    }
+  }
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
+    // 만약 상위에서 받는 toggleSidebar가 있다면:
+    // toggleSidebar();
+  };
+
   const toggleLanguageMenu = () => {
     setIsLanguageMenuOpen(!isLanguageMenuOpen);
+  };
+
+  const handleHideButtons = () => {
+    setShowButtons(false);
   };
 
   const clicked = () => {
@@ -37,31 +93,25 @@ function Home() {
       alert("Input cannot be empty!");
       return; // Ngăn không cho tiến trình tiếp tục
     }
-
-    const formatted = userInput
-      .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
-      .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
-      .filter(Boolean);
-    setTempText(formatted);
-    setText("");
-    if (title != "Summerize") {
-      setTitle("Summerize");
-    } else {
-      setTitle("Past your text in the text-box");
-    }
-    handleRemoveAll();
-    setMessages([...messages, { text: userInput, sender: "self" }]);
-    setUserInput("");
-    setIsInputAtBottom(true);
-
-    // Đặt lại chiều cao của textarea
-    const textarea = document.querySelector("textarea");
-    if (textarea) {
-      textarea.style.height = "auto"; // Reset height
-    }
+    
+      const formatted = userInput
+        .split(/(?<=[.!?])\s+/) // ".", "!", "?" 뒤의 공백 기준으로 분리
+        .map((sentence) => sentence.trim()) // 각 문장의 앞뒤 공백 제거
+        .filter(Boolean);
+      setTempText(formatted);
+      setText("");
+      if (title != "") {
+        setTitle("");
+      } else {
+        setTitle("Past your text in the text-box");
+      }
+      handleRemoveAll();
+      setMessages([...messages, { text: userInput, sender: "self" }]);
+      setUserInput("");
+      setIsInputAtBottom(true);
+    
   };
 
-  const [showButtons, setShowButtons] = useState(true);
 
   const handleRemoveAll = () => {
     // 버튼 보임 여부를 false 로 변경
@@ -76,47 +126,149 @@ function Home() {
   const handleMouseUp = (index) => {
     const selection = window.getSelection();
     const selectedString = selection.toString();
+  
+    if (!selectedString) return;
+  
+    // 노드 색칠
+    const range = selection.getRangeAt(0);
+    const span = document.createElement("span");
+    span.style.backgroundColor = "yellow";
+    span.style.borderRadius = "30px";
+    span.style.padding = "4px 6px";
+    span.textContent = selectedString;
+    range.deleteContents();
+    range.insertNode(span);
+  
+    // 1) UI를 위해 state 업데이트 (비동기)
+    setSelectedText(selectedString);
+    setIndexText(tempText[index]);
+  
+    // 2) API 호출에는 'state' 대신 바로 추출한 변수를 사용
+    const API = "http://43.201.113.85:8000/gpt/search";
+    const post_data = {
+      user_id: 19,
+      searching_word: selectedString,    // 여기!
+      context_sentence: tempText[index], // 여기!
+      target_language: "korean",
+    };
+  
+    openSidebar();
+  
+    // 3) axios 호출
+    axios.post(API, post_data)
+      .then(response => {
+        // 서버 응답 예: gpt_result가 "뜻/설명/예문" 형태라고 가정
+        const [text1, text2, text3] = response.data.gpt_result.split(/\//);
 
-    if (selectedString) {
-      // Lấy node cha chứa đoạn văn bản đã chọn
-      const range = selection.getRangeAt(0);
-      const span = document.createElement("span");
-
-      // Thêm class để đổi màu
-      span.style.backgroundColor = "yellow";
-      span.textContent = selectedString;
-
-      // Thay thế đoạn văn bản đã chọn bằng span
-      range.deleteContents();
-      range.insertNode(span);
-
-      // Lưu chữ đã chọn và toàn bộ câu tương ứng
-      setSelectedText(selectedString);
-      setIndexText(tempText[index]);
-
-      console.log(selectedText);
-      console.log(indexText);
-    }
+  
+        // 상태 갱신 (비동기)
+        setMeaning(text1);
+        setExplanation(text2);
+        setExample(text3);
+        setImgsrc1(response.data.image_results[0])
+        setImgsrc2(response.data.image_results[1])
+        setImgsrc3(response.data.image_results[2])
+        // 콘솔에서 즉시 확인하고 싶다면 "로컬 변수"로 확인
+        console.log("text1(뜻):", text1);
+        console.log("text2(설명):", text2);
+        console.log("text3(예문):", text3);
+      })
+      .catch(err => console.error(err));
   };
+
+
+
+
+  const seg_sent = (index) => {
+    
+    // 2) API 호출에는 'state' 대신 바로 추출한 변수를 사용
+    const API = "http://43.201.113.85:8000/gpt/sentence-segment";
+    const post_data = {
+      complex_sentence: tempText[index],
+      target_language: "korean",
+    };
+    
+    setImgsrc1("");
+    setImgsrc2("");
+    setImgsrc3("");
+    openSidebar();
+    // 3) axios 호출
+    axios.post(API, post_data)
+      .then(response => {
+        const splitted = response.data.segmented_sentence?.split(/\//) || [];
+
+        // 인덱스 0, 1, 2가 없을 수 있으니 각각 체크 후 상태 세팅
+        setMeaning(splitted[0] || "");
+        setExplanation(splitted[1] || "");
+        setExample(splitted[2] || "");
+
+      })
+      .catch(err => console.error(err));
+  };
+
+
+  const Review = (index) => {
+    
+    // 2) API 호출에는 'state' 대신 바로 추출한 변수를 사용
+    const API = "http://43.201.113.85:8000/db/read-words";
+    const post_data = {
+      user_id : 19,
+      target_language: "korean",
+    };
+    closeSidebar();
+  
+    // 3) axios 호출
+    axios.post(API, post_data)
+      .then(response => {
+        const sentences = response.data.paragraphs;
+
+        setTempText(sentences);
+        setMeaning("");
+        setExplanation("");
+        setExample("");
+        setImgsrc1("");
+        setImgsrc2("");
+        setImgsrc3("");
+
+      })
+      .catch(err => console.error(err));
+  };
+  
 
   return (
     <>
       <div className="App">
         {/* Navbar */}
-        <div className="navbar flex justify-between p-4 bg-gray-100 shadow">
-          <button
-            onClick={toggleSidebar}
-            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-          >
-            Sidebar
-          </button>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600">
-            Review
-          </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600">
-            Language
-          </button>
-        </div>
+        <div className="navbar flex items-center p-4 bg-white relative overflow-hidden gap-2">
+      {/* 왼쪽 버튼 (Sidebar) */}
+      <button
+        onClick={handleSidebarToggle}
+        className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+      >
+        Sidebar
+      </button>
+
+      {/* 가운데 + 오른쪽 버튼 묶음 */}
+      <div
+        className={`
+          flex gap-2 transition-transform duration-300 
+          ${isSidebarOpen ? "translate-x-full" : "translate-x-0"}
+        `}
+      >
+        <button
+          onClick={Review}
+          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-green-600"
+        >
+          Review
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-red-600"
+          
+        >
+          Language
+        </button>
+      </div>
+    </div>
 
         {/* Main Layout */}
         <div className="flex min-h-screen">
@@ -133,9 +285,12 @@ function Home() {
               >
                 Close Sidebar
               </button>
-              <p className="mb-4">Menu Item 1</p>
-              <p className="mb-4">Menu Item 2</p>
-              <p className="mb-4">Menu Item 3</p>
+              <p className="mb-4">{meaning}</p>
+              <p className="mb-4">{explanation}</p>
+              <p className="mb-4">{example}</p>
+              <img src={imgsrc1} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
+              <img src={imgsrc2} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
+              <img src={imgsrc3} onError="this.style.visibility='hidden'" className="w-64 h-auto rounded"></img>
             </div>
           </div>
 
@@ -145,22 +300,66 @@ function Home() {
               isSidebarOpen ? "ml-64" : "ml-0"
             } transition-all duration-300 ease-in-out`}
           >
+          <div className="pb-16">
             {/* Messages */}
-            <div className="whitespace-pre-wrap">
-              {tempText.map((sentence, index) => (
+            <div
+            className="
+              whitespace-pre-wrap
+              flex flex-col items-center justify-center
+              space-y-4
+            ">
+              {tempText.length !== 0 && (tempText.map((sentence, index) => (
                 <ul key={index}>
-                  <li
-                    className="mb-2 px-4 py-2 bg-gray-200 text-black rounded shadow w-80 h-auto text-center"
-                    onMouseUp={() => handleMouseUp(index)}
+                  <div
+                    className="
+                      flex items-start
+                      w-[1100px]          /* 고정 너비 설정 */
+                    "
                   >
-                    {sentence}
-                  </li>
+                    {/* 가위 이미지 버튼 */}
+                    <button
+                      className="
+                        w-12 h-12         /* 버튼 자체 크기 고정 */
+                        flex items-center  /* 수직/수평 가운데 정렬 */
+                        justify-center
+                        bg-transparent     /* 배경 투명 (테두리 X) */
+                        mr-2              /* 오른쪽 간격 */
+                        p-0               /* 기본 패딩 제거 */
+                      "
+                      onClick={() => {
+                        seg_sent(index)
+                      }}
+                      aria-label="가위 버튼"
+                      style={{ border: "none", outline: "none" }}  // 혹시 남는 브라우저 기본 테두리 제거용
+                    >
+                      <img
+                        src="src\Home\scissors.png"  // 실제 이미지 경로로 바꿔주세요
+                        alt="가위"
+                        className="w-6 h-6"
+                      />
+                    </button>
+
+                    {/* 문장(li) */}
+                    <li
+                      className="
+                        mb-2
+                        px-4 py-2
+                        flex-1 break-words
+                        bg-blue-100 text-black
+                        rounded-[30px] shadow
+                        list-none
+                      "
+                      onMouseUp={() => handleMouseUp(index)}
+                    >
+                      {sentence}
+                    </li>
+                  </div>
                 </ul>
-              ))}
+              )))}
             </div>
 
             <motion.h1
-              className="text-center text-4xl mb-8"
+              className="text-center text-4xl mb-8 whitespace-pre-wrap"
               initial="hidden"
               animate="visible"
               variants={fadeInFromTop}
@@ -169,13 +368,9 @@ function Home() {
             </motion.h1>
 
             {/* Input and Send Button */}
-            <div
-              className={`${
-                isInputAtBottom ? "absolute bottom-0 left-0 w-full" : "relative "
-              } p-4`}
-            >
-              <div className="flex items-center  gap-4 bg-white p-4 rounded-full shadow-md max-w-2xl mx-auto mt-4">
-                <textarea
+              <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-md max-w-xl mx-auto mt-4 mb-6">
+                <input
+                  type="text"
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   onInput={(e) => {
@@ -188,29 +383,106 @@ function Home() {
                 ></textarea>
                 <button
                   onClick={clicked}
-                  className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition duration-300"
+                  className="
+                    px-6
+                    py-3           /* 버튼도 높이를 조금 늘려 전체적으로 균형 맞춤 */
+                    bg-blue-500
+                    text-white
+                    font-medium
+                    rounded-full
+                    hover:bg-blue-600
+                    transition
+                    duration-300
+                  "
                 >
                   Send
                 </button>
-              </div>
+
+
+            </div>
+            <div className="w-full flex justify-center mt-2">
+  <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+      onClick={setKBS}
+    >
+      KBS
+    </button>)}
+    
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      SBS
+    </button>)}
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      YTN
+    </button>)}
+
+    <div className="flex gap-4">
+    {showButtons && (<button
+      className="
+        flex items-center
+        gap-2
+        px-4 py-2
+        text-sm
+        text-gray-600
+        border border-gray-300
+        rounded-md
+        hover:bg-gray-100
+        transition-colors duration-200
+      "
+    >
+      MBC
+    </button>)}
+  </div>
+</div>
+
+
               <div className="search w-full max-w-md">
-                {/* <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-full focus:outline-none"
-                  placeholder="Enter Text"
-                />
-                <button
-                  className="w-full mt-2 px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
-                  onClick={handleSend}
-                >
-                  Send
-                </button> */}
+                {/* 필요 없는 주석 처리된 부분은 그대로 두거나 제거하셔도 됩니다 */}
               </div>
             </div>
           </div>
         </div>
+      </div>
+      </div>
+      </div>
       </div>
     </>
   );

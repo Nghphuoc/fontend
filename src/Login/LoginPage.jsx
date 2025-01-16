@@ -38,6 +38,7 @@ const LoginPage = () => {
         });
 
       console.log("create successfully!");
+      navigate("/Home");
     } catch (error) {
       console.error("Error:", error);
     }
@@ -51,40 +52,37 @@ const LoginPage = () => {
   };
 
   return (
-    <>
-    <div className="text-center ">
-      <Toaster/>
-    </div>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-        <motion.h1
-          className="text-center text-4xl mb-8"
-          initial="hidden"
-          animate="visible"
-          variants={fadeInFromTop}
-        >
-          Welcome to immersity!
-        </motion.h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+      <motion.h1
+        className="text-center text-4xl mb-8"
+        initial="hidden"
+        animate="visible"
+        variants={fadeInFromTop}
+      >
+        Welcome to our Immersity!
+      </motion.h1>
 
-        <div className="bg-gray-100 p-8 rounded-lg shadow-lg w-auto">
-          <input
-            type="email"
-            placeholder="Enter your e-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full p-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-            required
-            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-          />
-          <button
-            className="w-full p-3 rounded-full bg-gray-300 text-black font-bold hover:bg-gray-400"
-            onClick={loginButton}
-          >
-            Leave your first step!
-          </button>
-        </div>
+      <div className="bg-gray-100 p-8 rounded-lg shadow-lg w-auto">
+        <input
+          type="email"
+          placeholder="Enter your e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="w-full p-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+          required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+        />
+        <button
+          className="w-full p-3 rounded-full bg-gray-300 text-black font-bold hover:bg-gray-400"
+          value={email}
+          onClick={loginButton}
+          onKeyDown={handleKeyDown}
+        >
+          Leave your first step!
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 
