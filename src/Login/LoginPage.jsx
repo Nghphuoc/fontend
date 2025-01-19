@@ -29,8 +29,7 @@ const LoginPage = () => {
       LoginApi(email)
         .then((data) => {
           console.log("User ID:", data.user_id);
-          setSaveUserId(data.user_id);
-          localStorage.setItem("user_id",saveUserId);
+          localStorage.setItem("user_id",data.user_id);
           toast.success("Login successfully!");
           navigate("/home");
         })
