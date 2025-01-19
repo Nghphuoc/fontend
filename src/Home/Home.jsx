@@ -54,7 +54,10 @@ function Home() {
     console.log("explanation:", explanation);
     console.log("example:", example);
     console.log("selectedText", selectedText);
-  }, [meaning, indexText, explanation, example, selectedText]);
+    console.log("imgsrc1", imgsrc1);
+    console.log("imgsrc2", imgsrc2);
+    console.log("imgsrc3", imgsrc3);
+  }, [meaning, indexText, explanation, example, selectedText, imgsrc1, imgsrc2, imgsrc3]);
 
   const setKBS = () => {
     const formatted = kbs_news
@@ -179,10 +182,6 @@ function Home() {
         setImgsrc1(response.data.image_results[0]);
         setImgsrc2(response.data.image_results[1]);
         setImgsrc3(response.data.image_results[2]);
-        // 콘솔에서 즉시 확인하고 싶다면 "로컬 변수"로 확인
-        console.log("text1(뜻):", text1);
-        console.log("text2(설명):", text2);
-        console.log("text3(예문):", text3);
       })
       .catch((err) => console.error(err))
       .finally(() => {
@@ -294,7 +293,7 @@ function Home() {
                 <div className="flex items-center justify-center h-full">
                   <svg
                     aria-hidden="true"
-                    class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
+                    className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
                     viewBox="0 0 100 101"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -308,8 +307,7 @@ function Home() {
                       fill="currentFill"
                     />
                   </svg>
-                  <span class="sr-only">Loading...</span>
-                  {/* loading show when you have new request */}
+                  <span className="sr-only">Loading...</span>
                 </div>
               ) : (
                 <>
@@ -318,23 +316,26 @@ function Home() {
                   <p className="mb-4">{example}</p>
                   <img
                     src={imgsrc1}
-                    onError="this.style.visibility='hidden'"
+                    alt="img1"
                     className="w-64 h-auto rounded"
-                  ></img>
+                    onError={(e) => (e.target.style.display = 'none')}
+                  />
                   <img
                     src={imgsrc2}
-                    onError="this.style.visibility='hidden'"
+                    alt="img2"
                     className="w-64 h-auto rounded"
-                  ></img>
+                    onError={(e) => (e.target.style.display = 'none')}
+                  />
                   <img
                     src={imgsrc3}
-                    onError="this.style.visibility='hidden'"
+                    alt="img3"
                     className="w-64 h-auto rounded"
-                  ></img>
+                    onError={(e) => (e.target.style.display = 'none')}
+                  />
                 </>
               )}
+              </div>        
             </div>
-          </div>
 
           {/* Main Content */}
           <div
